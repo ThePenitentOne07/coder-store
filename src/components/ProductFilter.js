@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { FMultiCheckbox, FRadioGroup } from "./form";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
@@ -25,6 +26,21 @@ export const FILTER_PRICE_OPTIONS = [
 ];
 
 function ProductFilter({ resetFilter }) {
+  const [filterValues, setFilterValues] = useState({
+    gender: [],
+    category: "",
+    priceRange: "",
+  });
+
+  const handleReset = () => {
+    setFilterValues({
+      gender: [],
+      category: "",
+      priceRange: "",
+    });
+    if (resetFilter) resetFilter(); // Call the resetFilter if provided
+  };
+
   return (
     <Stack spacing={3} sx={{ p: 3, width: 250 }}>
       <Stack spacing={1}>
@@ -34,6 +50,8 @@ function ProductFilter({ resetFilter }) {
         <FMultiCheckbox
           name="gender"
           options={FILTER_GENDER_OPTIONS}
+          value={filterValues.gender}
+          onChange={(newGender) => setFilterValues((prev) => ({ ...prev, gender: newGender }))}
           sx={{ width: 1 }}
         />
       </Stack>
@@ -45,6 +63,8 @@ function ProductFilter({ resetFilter }) {
         <FRadioGroup
           name="category"
           options={FILTER_CATEGORY_OPTIONS}
+          value={filterValues.category}
+          onChange={(event) => setFilterValues((prev) => ({ ...prev, category: event.target.value }))}
           row={false}
         />
       </Stack>
@@ -56,17 +76,19 @@ function ProductFilter({ resetFilter }) {
         <FRadioGroup
           name="priceRange"
           options={FILTER_PRICE_OPTIONS.map((item) => item.value)}
-          getOptionLabel={FILTER_PRICE_OPTIONS.map((item) => item.label)}
+          getOptionLabel={(option) => FILTER_PRICE_OPTIONS.find((item) => item.value === option).label}
+          value={filterValues.priceRange}
+          onChange={(event) => setFilterValues((prev) => ({ ...prev, priceRange: event.target.value }))}
         />
       </Stack>
 
       <Box>
         <Button
           size="large"
-          type="submit"
+          type="button"
           color="inherit"
           variant="outlined"
-          onClick={resetFilter}
+          onClick={handleReset}
           startIcon={<ClearAllIcon />}
         >
           Clear All
